@@ -27,11 +27,13 @@ const client = new TelegramClient(stringSession, apiId, apiHash, {
 
   client.addEventHandler(async (update) => {
     const msgs = await client.getMessages(`@${channelTarget}`, {
-      limit: 10,
+      limit: 30,
     });
 
     const channel = update?.message?.peerId?.channelId?.toString();
+    console.log(channel);
     const isChannel = channels.some((item) => item === channel);
+    console.log(isChannel);
 
     if (update?.message && isChannel) {
       for (const msg of msgs) {
@@ -43,6 +45,9 @@ const client = new TelegramClient(stringSession, apiId, apiHash, {
             message: msg.id,
             text: mensagem,
           });
+
+          // Sair do loop quando a condição for atendida
+          break;
         }
       }
     }
@@ -56,7 +61,12 @@ async function eventPrint(event) {
   let message = `🎯id: ${event.message.id}\n`;
   message += event.message.message;
 
-  await client.sendMessage(`@${channelTarget}`, {
-    message: `${message}`,
-  });
+  const channel = event?.message?.peerId?.channelId?.toString();
+  const isChannel = channels.some((item) => item === channel);
+
+  if (isChannel) {
+    await client.sendMessage(`@${channelTarget}`, {
+      message: `${message}`,
+    });
+  }
 }
