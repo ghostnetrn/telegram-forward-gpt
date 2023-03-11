@@ -1,0 +1,51 @@
+name: bottelegram
+
+jobs:
+  scheduled-job:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+      - name: Ask for environment variables
+        run: |
+          echo "Enter STRING_SESSION:"
+          read STRING_SESSION
+          echo "Enter TELEGRAM_API_HASH:"
+          read TELEGRAM_API_HASH
+          echo "Enter TELEGRAM_API_ID:"
+          read TELEGRAM_API_ID
+          echo "Enter VERSION:"
+          read VERSION
+          echo "Enter CHANNELS_SOURCE:"
+          read CHANNELS_SOURCE
+          echo "Enter CHANNEL_TARGET:"
+          read CHANNEL_TARGET
+      - name: Set environment variables
+        env:
+          STRING_SESSION: ${{ env.STRING_SESSION }}
+          TELEGRAM_API_HASH: ${{ env.TELEGRAM_API_HASH }}
+          TELEGRAM_API_ID: ${{ env.TELEGRAM_API_ID }}
+          VERSION: ${{ env.VERSION }}
+          CHANNELS_SOURCE: ${{ env.CHANNELS_SOURCE }}
+          CHANNEL_TARGET: ${{ env.CHANNEL_TARGET }}
+        run: |
+          export STRING_SESSION=$STRING_SESSION
+          export TELEGRAM_API_HASH=$TELEGRAM_API_HASH
+          export TELEGRAM_API_ID=$TELEGRAM_API_ID
+          export VERSION=$VERSION
+          export CHANNELS_SOURCE=$CHANNELS_SOURCE
+          export CHANNEL_TARGET=$CHANNEL_TARGET
+      - run: npm install
+      - name: Run code continuously
+        env:
+          STRING_SESSION: ${{ env.STRING_SESSION }}
+          TELEGRAM_API_HASH: ${{ env.TELEGRAM_API_HASH }}
+          TELEGRAM_API_ID: ${{ env.TELEGRAM_API_ID }}
+          VERSION: ${{ env.VERSION }}
+          CHANNELS_SOURCE: ${{ env.CHANNELS_SOURCE }}
+          CHANNEL_TARGET: ${{ env.CHANNEL_TARGET }}
+        run: npm start &
+      - name: Wait indefinitely
+        run: sleep infinity
