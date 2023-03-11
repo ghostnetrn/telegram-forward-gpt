@@ -68,6 +68,7 @@ async function eventPrint(event) {
   const options = {
     message: message,
     formattingEntities: event.message.entities,
+    parseMode: "html",
   };
 
   if (isChannel) {
