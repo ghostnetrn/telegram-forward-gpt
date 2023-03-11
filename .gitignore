@@ -126,3 +126,4 @@ dist
 .yarn/install-state.gz
 .pnp.*
 test2.js
+index_v1.js

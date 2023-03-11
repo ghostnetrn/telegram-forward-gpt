@@ -1,4 +1,5 @@
 require("dotenv").config();
+const fs = require("fs");
 const { TelegramClient } = require("telegram");
 const { StringSession } = require("telegram/sessions");
 const { NewMessage } = require("telegram/events");
@@ -32,20 +33,29 @@ const client = new TelegramClient(stringSession, apiId, apiHash, {
 
     const channel = update?.message?.peerId?.channelId?.toString();
     const isChannel = channels.some((item) => item === channel);
-    
+
     if (update?.message && isChannel) {
-      for (const msg of msgs) {
-        if (msg.text.includes(update.message.id)) {
-          let mensagem = `🎯id: ${update.message.id}\n`;
-          mensagem += update.message.message;
+      const data = fs.readFileSync("messageInfos.json", "utf8");
+      const messageInfos = JSON.parse(data);
 
-          const options = {
-            message: msg.id,
-            text: mensagem,
-            formattingEntities: update.message.entities,
-          };
+      for (const messageInfo of messageInfos) {
+        if (
+          messageInfo.messageId === update.message.id &&
+          messageInfo.channelId === channel
+        ) {
+          const msg = msgs.find((m) => m.id === messageInfo.sentMessageId);
 
-          await client.editMessage(`@${channelTarget}`, options);
+          if (msg) {
+            const mensagem = update.message.message;
+
+            const options = {
+              message: msg.id,
+              text: mensagem,
+              formattingEntities: update.message.entities,
+            };
+
+            await client.editMessage(`@${channelTarget}`, options);
+          }
 
           // Sair do loop quando a condição for atendida
           break;
@@ -58,9 +68,11 @@ const client = new TelegramClient(stringSession, apiId, apiHash, {
   client.addEventHandler(eventPrint, new NewMessage({}));
 })();
 
+let messageInfos = [];
+
 async function eventPrint(event) {
-  let message = `🎯id: ${event.message.id}\n`;
-  message += event.message.message;
+  const messageId = event.message.id;
+  let message = event.message.message;
 
   const channel = event?.message?.peerId?.channelId?.toString();
   const isChannel = channels.some((item) => item === channel);
@@ -72,7 +84,21 @@ async function eventPrint(event) {
   };
 
   if (isChannel) {
-    await client.sendMessage(`@${channelTarget}`, options);
-    // await client.forwardMessages(`@${channelTarget}`, { messages: message });
+    const sentMessage = await client.sendMessage(`@${channelTarget}`, options);
+    const messageInfo = {
+      messageId: messageId,
+      channelId: channel,
+      sentMessageId: sentMessage.id,
+    };
+
+    messageInfos.push(messageInfo); // Adiciona o objeto `messageInfo` ao array `messageInfos`
+
+    // Salva o array `messageInfos` em um arquivo JSON
+    const jsonData = JSON.stringify(messageInfos);
+    fs.writeFile("messageInfos.json", jsonData, "utf8", (err) => {
+      if (err) {
+        console.error(err);
+      }
+    });
   }
 }
