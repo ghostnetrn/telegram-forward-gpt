@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  telegram:
+    image: telegram
+    container_name: telegram
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/usr/app
+    env_file: .env
+    restart: unless-stopped
+    ports:
+    - "3001:3001"
