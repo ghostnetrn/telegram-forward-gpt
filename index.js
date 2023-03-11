@@ -1,6 +1,6 @@
 require("dotenv").config();
 const fs = require("fs");
-const { TelegramClient } = require("telegram");
+const { Api, TelegramClient } = require("telegram");
 const { StringSession } = require("telegram/sessions");
 const { NewMessage } = require("telegram/events");
 const input = require("input");
@@ -71,8 +71,8 @@ const client = new TelegramClient(stringSession, apiId, apiHash, {
 let messageInfos = [];
 
 async function eventPrint(event) {
-  const messageId = event.message.id;
-  let message = event.message.message;
+  const messageId = event.message?.id;
+  let message = event.message?.message;
 
   const channel = event?.message?.peerId?.channelId?.toString();
   const isChannel = channels.some((item) => item === channel);
@@ -83,7 +83,7 @@ async function eventPrint(event) {
     parseMode: "html",
   };
 
-  if (isChannel) {
+  if (isChannel && message) {
     const sentMessage = await client.sendMessage(`@${channelTarget}`, options);
     const messageInfo = {
       messageId: messageId,
@@ -99,6 +99,14 @@ async function eventPrint(event) {
       if (err) {
         console.error(err);
       }
+    });
+    return 
+  }
+
+  if (event.message.media) {
+    await client.sendMessage(`@${channelTarget}`, {
+      message,
+      file: event.message?.media,
     });
   }
 }
