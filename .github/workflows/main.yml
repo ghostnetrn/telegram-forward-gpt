@@ -15,5 +15,5 @@ jobs:
 
       - name: Ler variável de Secrets
         env:
-          TESTE: ${{ secrets.TESTE }}
+          TESTE: ${{ env.TESTE }}
         run: echo $TESTE
