@@ -1,4 +1,4 @@
-name: Exemplo de GitHub Actions
+name: Exemplo de leitura de Secrets
 
 on:
   push:
@@ -10,17 +10,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Solicitar entrada do usuário
-        run: |
-          echo "Insira o valor de FOO:"
-          read FOO
-          echo "Insira o valor de BAR:"
-          read BAR
+      - name: Checkout do código
+        uses: actions/checkout@v2
 
-      - name: Exibir variáveis de ambiente
+      - name: Ler variável de Secrets
         env:
-          FOO: ${{ env.FOO }}
-          BAR: ${{ env.BAR }}
-        run: |
-          echo "Valor de FOO: $FOO"
-          echo "Valor de BAR: $BAR"
+          TESTE: ${{ secrets.TESTE }}
+        run: echo $TESTE
