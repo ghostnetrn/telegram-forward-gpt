@@ -1,21 +1,26 @@
-name: User input example
+name: Exemplo de GitHub Actions
 
-on: [push]
+on:
+  push:
+    branches:
+      - main
 
 jobs:
-  user-input:
+  build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Request user input
-        id: vars
+      - name: Solicitar entrada do usuário
         run: |
-          echo "Enter value for FOO"
-          read foo
-          echo "Enter value for BAR"
-          read bar
-          echo "::set-output name=foo::$foo"
-          echo "::set-output name=bar::$bar"
-      - name: Print variables
+          echo "Insira o valor de FOO:"
+          read FOO
+          echo "Insira o valor de BAR:"
+          read BAR
+
+      - name: Exibir variáveis de ambiente
+        env:
+          FOO: ${{ env.FOO }}
+          BAR: ${{ env.BAR }}
         run: |
-          echo "FOO = ${{ steps.vars.outputs.foo }}"
-          echo "BAR = ${{ steps.vars.outputs.bar }}"
+          echo "Valor de FOO: $FOO"
+          echo "Valor de BAR: $BAR"
