@@ -86,7 +86,7 @@ async function eventPrint(event) {
   // }
 
   console.log(channelOrGroup)
-  console.log(event?.message?.peerId?.channelId)
+  console.log(event?.message?.peerId?.channelId?.toString())
 
   const channel = event?.message?.peerId?.channelId?.toString();
   const isChannel =
