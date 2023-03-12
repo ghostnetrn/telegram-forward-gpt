@@ -32,7 +32,9 @@ const client = new TelegramClient(stringSession, apiId, apiHash, {
     });
 
     const channel = update?.message?.peerId?.channelId?.toString();
-    const isChannel = channels.some((item) => item === channel);
+    const isChannel =
+      update?.message?.peerId?.channelId &&
+      channels.some((item) => item === channel);
 
     if (update?.message && isChannel) {
       const data = fs.readFileSync("messageInfos.json", "utf8");
@@ -73,11 +75,22 @@ let messageInfos = [];
 async function eventPrint(event) {
   const messageId = event.message?.id;
   let message = event.message?.message;
+  let channelOrGroup = null;
 
+  // if (isChannel) {
+  //   // if Channel
+    channelOrGroup = event?.message?.peerId?.channelId;
+  // } else {
+  //   // if Group
+    channelOrGroup = event?.message?.peerId?.chatId;
+  // }
+
+  console.log(channelOrGroup)
+  
   const channel = event?.message?.peerId?.channelId?.toString();
   const isChannel =
     event?.message?.peerId?.channelId &&
-    channels.some((item) => item === event.message.peerId.channelId.toString());
+    channels.some((item) => item === channel);
 
   const options = {
     message: message,
@@ -105,7 +118,7 @@ async function eventPrint(event) {
     return;
   }
 
-  if (event.message.media) {
+  if (isChannel && event.message.media) {
     await client.sendMessage(`@${channelTarget}`, {
       message,
       file: event.message?.media,
