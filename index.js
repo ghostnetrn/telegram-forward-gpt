@@ -75,23 +75,17 @@ let messageInfos = [];
 async function eventPrint(event) {
   const messageId = event.message?.id;
   let message = event.message?.message;
-  let channelOrGroup = null;
-
-  // if (isChannel) {
-  //   // if Channel
-    channelOrGroup = event?.message?.peerId?.channelId;
-  // } else {
-  //   // if Group
-    channelOrGroup = event?.message?.peerId?.chatId;
-  // }
-
-  console.log(channelOrGroup)
-  console.log(event?.message?.peerId?.channelId)
+  let channelOrGroup = event.message?.peerId?.channelId
+    ? event.message?.peerId?.channelId
+    : event.message?.peerId?.chatId;
 
   const channel = event?.message?.peerId?.channelId?.toString();
   const isChannel =
     event?.message?.peerId?.channelId &&
     channels.some((item) => item === channel);
+  
+  console.log(channelOrGroup);
+  console.log(isChannel);
 
   const options = {
     message: message,
