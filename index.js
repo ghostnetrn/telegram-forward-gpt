@@ -75,7 +75,9 @@ async function eventPrint(event) {
   let message = event.message?.message;
 
   const channel = event?.message?.peerId?.channelId?.toString();
-  const isChannel = channels.some((item) => item === channel);
+  const isChannel =
+    event?.message?.peerId?.channelId &&
+    channels.some((item) => item === event.message.peerId.channelId.toString());
 
   const options = {
     message: message,
@@ -100,7 +102,7 @@ async function eventPrint(event) {
         console.error(err);
       }
     });
-    return 
+    return;
   }
 
   if (event.message.media) {
